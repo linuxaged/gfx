@@ -1,0 +1,3 @@
+[submodule "src/external/math"]
+	path = src/external/math
+	url = https://github.com/linuxaged/math.git
