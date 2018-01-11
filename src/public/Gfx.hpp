@@ -221,7 +221,7 @@ typedef VkResult( VKAPI_PTR* PFN_vkCreateMacOSSurfaceKHR )(
 #    define vkCreateSurfaceKHR vkCreateDisplayPlaneSurfaceKHR
 #endif
 
-#define VK_ALLOCATOR NULL
+#define VK_ALLOCATOR nullptr
 
 #define USE_VALIDATION 1
 #define USE_SPIRV 1

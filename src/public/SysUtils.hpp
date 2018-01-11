@@ -29,8 +29,8 @@ static void* AllocAlignedMemory( size_t size, size_t alignment )
 #if defined( OS_WINDOWS )
     return _aligned_malloc( size, alignment );
 #elif defined( OS_APPLE )
-    void* ptr = NULL;
-    return ( posix_memalign( &ptr, alignment, size ) == 0 ) ? ptr : NULL;
+    void* ptr = nullptr;
+    return ( posix_memalign( &ptr, alignment, size ) == 0 ) ? ptr : nullptr;
 #else
     return memalign( alignment, size );
 #endif
@@ -91,7 +91,7 @@ static void Error( const char* format, ... )
 
     OutputDebugStringA( buffer );
 
-    MessageBoxA( NULL, buffer, "ERROR", MB_OK | MB_ICONINFORMATION );
+    MessageBoxA( nullptr, buffer, "ERROR", MB_OK | MB_ICONINFORMATION );
 #elif defined( OS_LINUX )
     va_list args;
     va_start( args, format );
@@ -154,7 +154,7 @@ static void Error( const char* format, ... )
     __android_log_print( ANDROID_LOG_ERROR, "atw", "%s", buffer );
 #endif
     // Without exiting, the application will likely crash.
-    if ( format != NULL )
+    if ( format != nullptr )
     {
         exit( 0 );
     }

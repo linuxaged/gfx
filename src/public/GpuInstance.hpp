@@ -24,7 +24,7 @@ class GpuInstance
     GpuInstance();
     ~GpuInstance();
 
-  private:
+  public:
     VkBool32   validate = false;
     void*      loader   = nullptr;
     VkInstance instance = nullptr;

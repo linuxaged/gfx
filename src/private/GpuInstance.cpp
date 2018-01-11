@@ -64,7 +64,7 @@ VkBool32 DebugReportCallback( VkDebugReportFlagsEXT                       msgFla
 #define GET_INSTANCE_PROC_ADDR_EXP( function )                                                     \
     this->function =                                                                               \
         ( PFN_##function )( this->vkGetInstanceProcAddr( this->instance, #function ) );            \
-    assert( this->function != NULL );
+    assert( this->function != nullptr );
 #define GET_INSTANCE_PROC_ADDR( function ) GET_INSTANCE_PROC_ADDR_EXP( function )
 
 // Returns true if all the required features are present.
@@ -115,12 +115,12 @@ GpuInstance::GpuInstance()
     // Get the global functions.
 #if defined( OS_WINDOWS )
     this->loader = LoadLibrary( TEXT( VULKAN_LOADER ) );
-    if ( this->loader == NULL )
+    if ( this->loader == nullptr )
     {
         char buffer[1024];
-        FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(),
+        FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM, nullptr, GetLastError(),
                        MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), buffer, sizeof( buffer ),
-                       NULL );
+                       nullptr );
         Error( "%s not available: %s", VULKAN_LOADER, buffer );
     }
     this->vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)GetProcAddress(
@@ -137,7 +137,7 @@ GpuInstance::GpuInstance()
     ( defined( OS_APPLE ) && !defined( VK_USE_PLATFORM_IOS_MVK ) &&                                \
       !defined( VK_USE_PLATFORM_MACOS_MVK ) )
     this->loader   = dlopen( VULKAN_LOADER, RTLD_NOW | RTLD_LOCAL );
-    if ( this->loader == NULL )
+    if ( this->loader == nullptr )
     {
         Error( "%s not available: %s", VULKAN_LOADER, dlerror() );
         return false;
@@ -174,11 +174,11 @@ GpuInstance::GpuInstance()
     bool        requiedExtensionsAvailable = true;
     {
         uint32_t availableExtensionCount = 0;
-        VK( this->vkEnumerateInstanceExtensionProperties( NULL, &availableExtensionCount, NULL ) );
+        VK( this->vkEnumerateInstanceExtensionProperties( nullptr, &availableExtensionCount, nullptr ) );
 
         VkExtensionProperties* availableExtensions = (VkExtensionProperties*)malloc(
             availableExtensionCount * sizeof( VkExtensionProperties ) );
-        VK( this->vkEnumerateInstanceExtensionProperties( NULL, &availableExtensionCount,
+        VK( this->vkEnumerateInstanceExtensionProperties( nullptr, &availableExtensionCount,
                                                           availableExtensions ) );
 
         requiedExtensionsAvailable = CheckFeatures(
@@ -215,7 +215,7 @@ GpuInstance::GpuInstance()
     bool        requiredLayersAvailable = true;
     {
         uint32_t availableLayerCount = 0;
-        VK( this->vkEnumerateInstanceLayerProperties( &availableLayerCount, NULL ) );
+        VK( this->vkEnumerateInstanceLayerProperties( &availableLayerCount, nullptr ) );
 
         VkLayerProperties* availableLayers =
             (VkLayerProperties*)malloc( availableLayerCount * sizeof( VkLayerProperties ) );
@@ -243,7 +243,7 @@ GpuInstance::GpuInstance()
     // Create the instance.
     VkApplicationInfo app;
     app.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    app.pNext              = NULL;
+    app.pNext              = nullptr;
     app.pApplicationName   = "gfx";
     app.applicationVersion = 0;
     app.pEngineName        = "gfx";
@@ -252,15 +252,15 @@ GpuInstance::GpuInstance()
 
     VkInstanceCreateInfo instanceCreateInfo;
     instanceCreateInfo.sType             = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    instanceCreateInfo.pNext             = NULL;
+    instanceCreateInfo.pNext             = nullptr;
     instanceCreateInfo.flags             = 0;
     instanceCreateInfo.pApplicationInfo  = &app;
     instanceCreateInfo.enabledLayerCount = enabledLayerCount;
     instanceCreateInfo.ppEnabledLayerNames =
-        (const char* const*)( enabledLayerCount != 0 ? enabledLayerNames : NULL );
+        (const char* const*)( enabledLayerCount != 0 ? enabledLayerNames : nullptr );
     instanceCreateInfo.enabledExtensionCount = enabledExtensionCount;
     instanceCreateInfo.ppEnabledExtensionNames =
-        (const char* const*)( enabledExtensionCount != 0 ? enabledExtensionNames : NULL );
+        (const char* const*)( enabledExtensionCount != 0 ? enabledExtensionNames : nullptr );
 
     VK( this->vkCreateInstance( &instanceCreateInfo, VK_ALLOCATOR, &this->instance ) );
 
@@ -298,11 +298,11 @@ GpuInstance::GpuInstance()
     {
         GET_INSTANCE_PROC_ADDR( vkCreateDebugReportCallbackEXT );
         GET_INSTANCE_PROC_ADDR( vkDestroyDebugReportCallbackEXT );
-        if ( this->vkCreateDebugReportCallbackEXT != NULL )
+        if ( this->vkCreateDebugReportCallbackEXT != nullptr )
         {
             VkDebugReportCallbackCreateInfoEXT debugReportCallbackCreateInfo;
             debugReportCallbackCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT;
-            debugReportCallbackCreateInfo.pNext = NULL;
+            debugReportCallbackCreateInfo.pNext = nullptr;
             debugReportCallbackCreateInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT |
                                                   VK_DEBUG_REPORT_WARNING_BIT_EXT |
                                                   VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
@@ -310,7 +310,7 @@ GpuInstance::GpuInstance()
             //VK_DEBUG_REPORT_DEBUG_BIT_EXT;
             debugReportCallbackCreateInfo.pfnCallback =
                 (PFN_vkDebugReportCallbackEXT)DebugReportCallback;
-            debugReportCallbackCreateInfo.pUserData = NULL;
+            debugReportCallbackCreateInfo.pUserData = nullptr;
 
             VK( this->vkCreateDebugReportCallbackEXT( this->instance,
                                                       &debugReportCallbackCreateInfo, VK_ALLOCATOR,
@@ -321,7 +321,7 @@ GpuInstance::GpuInstance()
 
 GpuInstance::~GpuInstance()
 {
-    if ( this->validate && this->vkDestroyDebugReportCallbackEXT != NULL )
+    if ( this->validate && this->vkDestroyDebugReportCallbackEXT != nullptr )
     {
         VC( this->vkDestroyDebugReportCallbackEXT( this->instance, this->debugReportCallback,
                                                    VK_ALLOCATOR ) );
@@ -329,7 +329,7 @@ GpuInstance::~GpuInstance()
 
     VC( this->vkDestroyInstance( this->instance, VK_ALLOCATOR ) );
 
-    if ( this->loader != NULL )
+    if ( this->loader != nullptr )
     {
 #if defined( OS_WINDOWS )
         FreeLibrary( static_cast<HMODULE>( this->loader ) );
