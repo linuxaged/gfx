@@ -33,17 +33,19 @@ struct GpuQueueInfo
 class GpuDevice
 {
   public:
-    GpuDevice( GpuInstance* instance, GpuQueueInfo const* queueInfo );
+    GpuDevice( GpuInstance* instance, GpuQueueInfo const* queueInfo,
+               const VkSurfaceKHR presentSurface );
     ~GpuDevice();
-
-    bool SelectPhysicalDevice( GpuInstance* instance, const GpuQueueInfo* queueInfo,
-                               const VkSurfaceKHR presentSurface );
 
     uint32_t GetMemoryTypeIndex( const uint32_t              typeBits,
                                  const VkMemoryPropertyFlags requiredProperties );
 
     void CreateShader( VkShaderModule* shaderModule, const VkShaderStageFlagBits stage,
                        const void* code, size_t codeSize );
+
+  private:
+    bool SelectPhysicalDevice( GpuInstance* instance, const GpuQueueInfo* queueInfo,
+                               const VkSurfaceKHR presentSurface );
 
   public:
     VkBool32                         foundSwapchainExtension;

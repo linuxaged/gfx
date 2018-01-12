@@ -3,9 +3,25 @@ cmake_minimum_required( VERSION 3.4.1 )
 project ( lxd_gfx )
 
 add_library( lxd_gfx STATIC
+	public/SysUtils.hpp
+	public/nanoseconds.h
+	public/threading.h
+	public/gl_format.h
+	public/vk_format.h
+	public/Gfx.hpp
+	public/GpuInstance.hpp
 	private/GpuInstance.cpp
+	public/GpuDevice.hpp
 	private/GpuDevice.cpp
+	public/GpuContext.hpp
 	private/GpuContext.cpp
+	public/GpuSwapchain.hpp
+	private/GpuSwapchain.cpp
+	public/GpuBuffer.hpp
+	private/GpuBuffer.cpp
+	public/GpuWindow.hpp
+	private/GpuWindow.cpp
+	public/GpuGraphicsProgram.hpp
 	private/GpuGraphicsProgram.cpp
 )
 

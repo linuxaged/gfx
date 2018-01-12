@@ -11,8 +11,12 @@ namespace lxd
     assert( this->function != nullptr );
 #define GET_DEVICE_PROC_ADDR( function ) GET_DEVICE_PROC_ADDR_EXP( function )
 
-GpuDevice::GpuDevice( GpuInstance* instance, GpuQueueInfo const* queueInfo )
+GpuDevice::GpuDevice( GpuInstance* instance, GpuQueueInfo const* queueInfo,
+                      const VkSurfaceKHR presentSurface )
 {
+	bool result = SelectPhysicalDevice(instance, queueInfo, presentSurface);
+	assert( result);
+
     //
     // Create the logical device
     //
