@@ -21,13 +21,21 @@ add_library( lxd_gfx STATIC
 	private/GpuBuffer.cpp
 	public/GpuWindow.hpp
 	private/GpuWindow.cpp
+	public/GpuVertexAttribute.hpp
+	private/GpuVertexAttribute.cpp
+	public/GpuGeometry.hpp
+	private/GpuGeometry.cpp
 	public/GpuGraphicsProgram.hpp
 	private/GpuGraphicsProgram.cpp
+	public/GpuRenderPass.hpp
+	private/GpuRenderPass.cpp
+	public/GpuGraphicsPipeline.hpp
+	private/GpuGraphicsPipeline.cpp
+
 )
 
 set_property(TARGET lxd_gfx PROPERTY CXX_STANDARD 17)
 set_property(TARGET lxd_gfx PROPERTY CXX_STANDARD_REQUIRED ON)
 
-target_include_directories( lxd_gfx PUBLIC ./public )
 target_compile_definitions( lxd_gfx PUBLIC OS_WINDOWS=1 _CRT_SECURE_NO_WARNINGS )
-target_include_directories( lxd_gfx PUBLIC ./public $ENV{VK_SDK_PATH}/Include )
+target_include_directories( lxd_gfx PUBLIC ./external/math ./public $ENV{VK_SDK_PATH}/Include )
