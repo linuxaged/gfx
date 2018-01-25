@@ -82,8 +82,8 @@ bool CheckFeatures( const char* label, const bool validationEnabled, const bool 
         for ( uint32_t j = 0; j < availableCount; j++ )
         {
             const char* name = extensions
-                                   ? ( (const VkExtensionProperties*)available )[j].extensionName
-                                   : ( (const VkLayerProperties*)available )[j].layerName;
+                                   ? ( static_cast<const VkExtensionProperties*>(available) )[j].extensionName
+                                   : ( static_cast<const VkLayerProperties*>(available) )[j].layerName;
             if ( strcmp( requested[i].name, name ) == 0 )
             {
                 found = true;
@@ -169,15 +169,15 @@ GpuInstance::GpuInstance()
         { VK_EXT_DEBUG_REPORT_EXTENSION_NAME, true, false },
     };
 
-    const char* enabledExtensionNames[32]  = { 0 };
+    const char* enabledExtensionNames[32]  = { nullptr };
     uint32_t    enabledExtensionCount      = 0;
     bool        requiedExtensionsAvailable = true;
     {
         uint32_t availableExtensionCount = 0;
         VK( this->vkEnumerateInstanceExtensionProperties( nullptr, &availableExtensionCount, nullptr ) );
 
-        VkExtensionProperties* availableExtensions = (VkExtensionProperties*)malloc(
-            availableExtensionCount * sizeof( VkExtensionProperties ) );
+        VkExtensionProperties* availableExtensions = static_cast<VkExtensionProperties*>(malloc(
+            availableExtensionCount * sizeof( VkExtensionProperties ) ));
         VK( this->vkEnumerateInstanceExtensionProperties( nullptr, &availableExtensionCount,
                                                           availableExtensions ) );
 

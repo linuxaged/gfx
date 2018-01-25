@@ -33,7 +33,7 @@ GpuSwapchain::GpuSwapchain( GpuContext* context, const VkSurfaceKHR surface,
     // Get the list of formats that are supported.
     uint32_t formatCount;
     VK( device->instance->vkGetPhysicalDeviceSurfaceFormatsKHR( device->physicalDevice, surface,
-                                                                &formatCount, NULL ) );
+                                                                &formatCount, nullptr ) );
 
     VkSurfaceFormatKHR* surfaceFormats =
         (VkSurfaceFormatKHR*)malloc( formatCount * sizeof( VkSurfaceFormatKHR ) );
@@ -97,7 +97,7 @@ GpuSwapchain::GpuSwapchain( GpuContext* context, const VkSurfaceKHR surface,
 
     for ( uint32_t i = 0; i < formatCount; i++ )
     {
-        const char* formatString = NULL;
+        const char* formatString = nullptr;
         switch ( surfaceFormats[i].format )
         {
             case VK_FORMAT_R5G6B5_UNORM_PACK16:
@@ -132,7 +132,7 @@ GpuSwapchain::GpuSwapchain( GpuContext* context, const VkSurfaceKHR surface,
     }
 
     free( surfaceFormats );
-    surfaceFormats = NULL;
+    surfaceFormats = nullptr;
 
     // Check the surface proprties and formats.
     VkSurfaceCapabilitiesKHR surfaceCapabilities;
@@ -146,10 +146,10 @@ GpuSwapchain::GpuSwapchain( GpuContext* context, const VkSurfaceKHR surface,
 
     uint32_t presentModeCount;
     VK( device->instance->vkGetPhysicalDeviceSurfacePresentModesKHR(
-        device->physicalDevice, surface, &presentModeCount, NULL ) );
+        device->physicalDevice, surface, &presentModeCount, nullptr ) );
 
     VkPresentModeKHR* presentModes =
-        (VkPresentModeKHR*)malloc( presentModeCount * sizeof( VkPresentModeKHR ) );
+        static_cast<VkPresentModeKHR*>(malloc( presentModeCount * sizeof( VkPresentModeKHR ) ));
     VK( device->instance->vkGetPhysicalDeviceSurfacePresentModesKHR(
         device->physicalDevice, surface, &presentModeCount, presentModes ) );
 
@@ -172,7 +172,7 @@ GpuSwapchain::GpuSwapchain( GpuContext* context, const VkSurfaceKHR surface,
 
     for ( uint32_t i = 0; i < presentModeCount; i++ )
     {
-        const char* formatString = NULL;
+        const char* formatString = nullptr;
         switch ( presentModes[i] )
         {
             case VK_PRESENT_MODE_IMMEDIATE_KHR:
@@ -200,12 +200,12 @@ GpuSwapchain::GpuSwapchain( GpuContext* context, const VkSurfaceKHR surface,
     }
 
     free( presentModes );
-    presentModes = NULL;
+    presentModes = nullptr;
 
     VkExtent2D swapchainExtent = {
-        std::clamp( (uint32_t)width, surfaceCapabilities.minImageExtent.width,
+        std::clamp( static_cast<uint32_t>(width), surfaceCapabilities.minImageExtent.width,
                     surfaceCapabilities.maxImageExtent.width ),
-        std::clamp( (uint32_t)height, surfaceCapabilities.minImageExtent.height,
+        std::clamp( static_cast<uint32_t>(height), surfaceCapabilities.minImageExtent.height,
                     surfaceCapabilities.maxImageExtent.height ),
     };
 
@@ -253,7 +253,7 @@ GpuSwapchain::GpuSwapchain( GpuContext* context, const VkSurfaceKHR surface,
 
     VkSwapchainCreateInfoKHR swapchainCreateInfo;
     swapchainCreateInfo.sType              = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    swapchainCreateInfo.pNext              = NULL;
+    swapchainCreateInfo.pNext              = nullptr;
     swapchainCreateInfo.flags              = 0;
     swapchainCreateInfo.surface            = surface;
     swapchainCreateInfo.minImageCount      = desiredNumberOfSwapChainImages;
@@ -267,7 +267,7 @@ GpuSwapchain::GpuSwapchain( GpuContext* context, const VkSurfaceKHR surface,
     swapchainCreateInfo.imageSharingMode =
         separatePresentQueue ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE;
     swapchainCreateInfo.queueFamilyIndexCount = separatePresentQueue ? 2 : 0;
-    swapchainCreateInfo.pQueueFamilyIndices   = separatePresentQueue ? queueFamilyIndices : NULL;
+    swapchainCreateInfo.pQueueFamilyIndices   = separatePresentQueue ? queueFamilyIndices : nullptr;
     swapchainCreateInfo.preTransform          = preTransform;
     swapchainCreateInfo.compositeAlpha        = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     swapchainCreateInfo.presentMode           = swapchainPresentMode;
@@ -278,19 +278,19 @@ GpuSwapchain::GpuSwapchain( GpuContext* context, const VkSurfaceKHR surface,
                                       &this->swapchain ) );
 
     VK( device->vkGetSwapchainImagesKHR( device->device, this->swapchain, &this->imageCount,
-                                         NULL ) );
+                                         nullptr ) );
 
-    this->images = (VkImage*)malloc( this->imageCount * sizeof( VkImage ) );
+    this->images = static_cast<VkImage*>(malloc( this->imageCount * sizeof( VkImage ) ));
     VK( device->vkGetSwapchainImagesKHR( device->device, this->swapchain, &this->imageCount,
                                          this->images ) );
 
-    this->views = (VkImageView*)malloc( this->imageCount * sizeof( VkImageView ) );
+    this->views = static_cast<VkImageView*>(malloc( this->imageCount * sizeof( VkImageView ) ));
 
     for ( uint32_t i = 0; i < this->imageCount; i++ )
     {
         VkImageViewCreateInfo imageViewCreateInfo;
         imageViewCreateInfo.sType                       = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        imageViewCreateInfo.pNext                       = NULL;
+        imageViewCreateInfo.pNext                       = nullptr;
         imageViewCreateInfo.flags                       = 0;
         imageViewCreateInfo.image                       = this->images[i];
         imageViewCreateInfo.viewType                    = VK_IMAGE_VIEW_TYPE_2D;
@@ -310,12 +310,13 @@ GpuSwapchain::GpuSwapchain( GpuContext* context, const VkSurfaceKHR surface,
     }
 
     this->bufferCount = this->imageCount;
-    this->buffers = (GpuSwapchainBuffer*)malloc( this->bufferCount * sizeof( GpuSwapchainBuffer ) );
+    this->buffers     = static_cast<GpuSwapchainBuffer*>(
+        malloc( this->bufferCount * sizeof( GpuSwapchainBuffer ) ) );
     for ( uint32_t i = 0; i < this->bufferCount; i++ )
     {
         VkSemaphoreCreateInfo semaphoreCreateInfo;
         semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-        semaphoreCreateInfo.pNext = NULL;
+        semaphoreCreateInfo.pNext = nullptr;
         semaphoreCreateInfo.flags = 0;
 
         this->buffers[i].imageIndex = 0;

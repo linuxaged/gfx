@@ -335,7 +335,7 @@ bool GpuDevice::SelectPhysicalDevice( GpuInstance* instance, const GpuQueueInfo*
             if ( ( queueFamilyProperties[queueFamilyIndex].queueFlags & requiredQueueFlags ) ==
                  requiredQueueFlags )
             {
-                if ( (int)queueFamilyProperties[queueFamilyIndex].queueCount >=
+                if ( static_cast<int>(queueFamilyProperties[queueFamilyIndex].queueCount) >=
                      queueInfo->queueCount )
                 {
                     workQueueFamilyIndex = queueFamilyIndex;
@@ -394,8 +394,8 @@ bool GpuDevice::SelectPhysicalDevice( GpuInstance* instance, const GpuQueueInfo*
                 physicalDevices[physicalDeviceIndex], nullptr, &availableExtensionCount,
                 nullptr ) );
 
-            VkExtensionProperties* availableExtensions = (VkExtensionProperties*)malloc(
-                availableExtensionCount * sizeof( VkExtensionProperties ) );
+            VkExtensionProperties* availableExtensions = static_cast<VkExtensionProperties*>(malloc(
+                availableExtensionCount * sizeof( VkExtensionProperties ) ));
             VK( instance->vkEnumerateDeviceExtensionProperties(
                 physicalDevices[physicalDeviceIndex], nullptr, &availableExtensionCount,
                 availableExtensions ) );
@@ -440,7 +440,7 @@ bool GpuDevice::SelectPhysicalDevice( GpuInstance* instance, const GpuQueueInfo*
                                                             &availableLayerCount, nullptr ) );
 
             VkLayerProperties* availableLayers =
-                (VkLayerProperties*)malloc( availableLayerCount * sizeof( VkLayerProperties ) );
+                static_cast<VkLayerProperties*>(malloc( availableLayerCount * sizeof( VkLayerProperties ) ));
             VK( instance->vkEnumerateDeviceLayerProperties(
                 physicalDevices[physicalDeviceIndex], &availableLayerCount, availableLayers ) );
 
@@ -488,7 +488,7 @@ bool GpuDevice::SelectPhysicalDevice( GpuInstance* instance, const GpuQueueInfo*
     }
 
     // Allocate a bit mask for the available queues per family.
-    this->queueFamilyUsedQueues = (uint32_t*)malloc( this->queueFamilyCount * sizeof( uint32_t ) );
+    this->queueFamilyUsedQueues = static_cast<uint32_t*>(malloc( this->queueFamilyCount * sizeof( uint32_t ) ));
     for ( uint32_t queueFamilyIndex = 0; queueFamilyIndex < this->queueFamilyCount;
           queueFamilyIndex++ )
     {

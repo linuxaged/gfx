@@ -41,27 +41,27 @@ bool GpuProgramParm::IsOpaqueBinding( const GpuProgramParmType type )
 }
 int GpuProgramParm::GetPushConstantSize( const GpuProgramParmType type )
 {
-    static const int parmSize[GPU_PROGRAM_PARM_TYPE_MAX] = { (unsigned int)0,
-                                                             (unsigned int)0,
-                                                             (unsigned int)0,
-                                                             (unsigned int)0,
-                                                             (unsigned int)sizeof( int ),
-                                                             (unsigned int)sizeof( int[2] ),
-                                                             (unsigned int)sizeof( int[3] ),
-                                                             (unsigned int)sizeof( int[4] ),
-                                                             (unsigned int)sizeof( float ),
-                                                             (unsigned int)sizeof( float[2] ),
-                                                             (unsigned int)sizeof( float[3] ),
-                                                             (unsigned int)sizeof( float[4] ),
-                                                             (unsigned int)sizeof( float[2][2] ),
-                                                             (unsigned int)sizeof( float[2][3] ),
-                                                             (unsigned int)sizeof( float[2][4] ),
-                                                             (unsigned int)sizeof( float[3][2] ),
-                                                             (unsigned int)sizeof( float[3][3] ),
-                                                             (unsigned int)sizeof( float[3][4] ),
-                                                             (unsigned int)sizeof( float[4][2] ),
-                                                             (unsigned int)sizeof( float[4][3] ),
-                                                             (unsigned int)sizeof( float[4][4] ) };
+    static const int parmSize[GPU_PROGRAM_PARM_TYPE_MAX] = { 0u,
+                                                             0u,
+                                                             0u,
+                                                             0u,
+                                                             sizeof( int ),
+                                                             sizeof( int[2] ),
+                                                             sizeof( int[3] ),
+                                                             sizeof( int[4] ),
+                                                             sizeof( float ),
+                                                             sizeof( float[2] ),
+                                                             sizeof( float[3] ),
+                                                             sizeof( float[4] ),
+                                                             sizeof( float[2][2] ),
+                                                             sizeof( float[2][3] ),
+                                                             sizeof( float[2][4] ),
+                                                             sizeof( float[3][2] ),
+                                                             sizeof( float[3][3] ),
+                                                             sizeof( float[3][4] ),
+                                                             sizeof( float[4][2] ),
+                                                             sizeof( float[4][3] ),
+                                                             sizeof( float[4][4] ) };
     assert( std::size( parmSize ) == GPU_PROGRAM_PARM_TYPE_MAX );
     return parmSize[type];
 }
@@ -103,13 +103,13 @@ GpuProgramParmLayout::GpuProgramParmLayout( GpuContext* context, GpuProgramParm 
                 if ( ( parms[i].stageFlags & ( 1 << stageIndex ) ) != 0 )
                 {
                     numSampledTextureBindings[stageIndex] +=
-                        ( parms[i].type == GPU_PROGRAM_PARM_TYPE_TEXTURE_SAMPLED );
+                        static_cast<int>( parms[i].type == GPU_PROGRAM_PARM_TYPE_TEXTURE_SAMPLED );
                     numStorageTextureBindings[stageIndex] +=
-                        ( parms[i].type == GPU_PROGRAM_PARM_TYPE_TEXTURE_STORAGE );
+						static_cast<int>( parms[i].type == GPU_PROGRAM_PARM_TYPE_TEXTURE_STORAGE );
                     numUniformBufferBindings[stageIndex] +=
-                        ( parms[i].type == GPU_PROGRAM_PARM_TYPE_BUFFER_UNIFORM );
+						static_cast<int>( parms[i].type == GPU_PROGRAM_PARM_TYPE_BUFFER_UNIFORM );
                     numStorageBufferBindings[stageIndex] +=
-                        ( parms[i].type == GPU_PROGRAM_PARM_TYPE_BUFFER_STORAGE );
+						static_cast<int>( parms[i].type == GPU_PROGRAM_PARM_TYPE_BUFFER_STORAGE );
                 }
             }
 
@@ -119,9 +119,9 @@ GpuProgramParmLayout::GpuProgramParmLayout( GpuContext* context, GpuProgramParm 
             assert( this->bindings[parms[i].binding] == nullptr );
 
             this->bindings[parms[i].binding] = &parms[i];
-            if ( (int)parms[i].binding >= this->numBindings )
+            if ( parms[i].binding >= this->numBindings )
             {
-                this->numBindings = (int)parms[i].binding + 1;
+                this->numBindings = parms[i].binding + 1;
             }
         }
         else

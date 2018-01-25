@@ -58,7 +58,7 @@ GpuContext::~GpuContext()
     this->device->queueFamilyUsedQueues[this->queueFamilyIndex] &= ~( 1 << this->queueIndex );
     ksMutex_Unlock( &this->device->queueFamilyMutex );
 
-    if ( this->setupCommandBuffer )
+    if ( nullptr != this->setupCommandBuffer )
     {
         VC( this->device->vkFreeCommandBuffers( this->device->device, this->commandPool, 1,
                                                 &this->setupCommandBuffer ) );
