@@ -3,7 +3,7 @@
 namespace lxd
 {
 GpuGeometry::GpuGeometry( GpuContext* context, const GpuVertexAttributeArrays* attribs,
-                          const GpuTriangleIndexArray* indices, const bool dynamic = false )
+                          const GpuTriangleIndexArray* indices, const bool dynamic )
     : vertexBuffer( context, GPU_BUFFER_TYPE_VERTEX, attribs->dataSize, attribs->data, false,
                     dynamic ),
       indexBuffer( context, GPU_BUFFER_TYPE_INDEX,

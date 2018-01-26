@@ -94,7 +94,7 @@ class GpuProgramParmLayout
     unsigned int          hash                             = 0;
 };
 
-class GpuVertexAttribute;
+struct GpuVertexAttribute;
 class GpuGraphicsProgram
 {
   public:

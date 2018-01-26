@@ -2,6 +2,7 @@
 
 #include "Gfx.hpp"
 #include "Matrix.hpp"
+#include "GpuContext.hpp"
 
 namespace lxd
 {
@@ -84,9 +85,9 @@ struct GpuRasterOperations
     GpuBlendFactor blendDstAlpha;
 };
 
-struct ksGpuGraphicsPipelineParms
+struct GpuGraphicsPipelineParms
 {
-    ksGpuGraphicsPipelineParms()
+    GpuGraphicsPipelineParms()
     {
         this->rop.blendEnable      = false;
         this->rop.redWriteEnable   = true;
@@ -112,7 +113,7 @@ struct ksGpuGraphicsPipelineParms
         this->program              = nullptr;
         this->geometry             = nullptr;
     }
-    ~ksGpuGraphicsPipelineParms();
+	~GpuGraphicsPipelineParms() {}
 
     GpuRasterOperations       rop;
     const GpuRenderPass*      renderPass;
@@ -123,9 +124,11 @@ struct ksGpuGraphicsPipelineParms
 class GpuGraphicsPipeline
 {
   public:
-    GpuGraphicsPipeline();
+    GpuGraphicsPipeline(GpuContext* context,
+		const GpuGraphicsPipelineParms* parms);
     ~GpuGraphicsPipeline();
 
+	GpuContext& context;
     GpuRasterOperations       rop;
     const GpuGraphicsProgram* program;
     const GpuGeometry*        geometry;

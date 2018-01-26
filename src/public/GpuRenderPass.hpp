@@ -1,7 +1,12 @@
 #pragma once
+
 #include "Gfx.hpp"
+#include "GpuContext.hpp"
+
 namespace lxd
 {
+	static const int EXPLICIT_RESOLVE = 0;
+
 typedef enum
 {
     GPU_RENDERPASS_TYPE_INLINE,
@@ -10,16 +15,21 @@ typedef enum
 
 typedef enum
 {
-    GPU_RENDERPASS_FLAG_CLEAR_COLOR_BUFFER = BIT( 0 ),
-    GPU_RENDERPASS_FLAG_CLEAR_DEPTH_BUFFER = BIT( 1 )
+    GPU_RENDERPASS_FLAG_CLEAR_COLOR_BUFFER = 0b0,
+    GPU_RENDERPASS_FLAG_CLEAR_DEPTH_BUFFER = 0b1
 } GpuRenderPassFlags;
+
+class GpuContext;
 
 class GpuRenderPass
 {
   public:
-    GpuRenderPass();
+    GpuRenderPass( GpuContext* context, const GpuSurfaceColorFormat colorFormat,
+                   const GpuSurfaceDepthFormat depthFormat, const GpuSampleCount sampleCount,
+                   const GpuRenderPassType type, const int flags );
     ~GpuRenderPass();
 
+    GpuContext&           context;
     GpuRenderPassType     type;
     int                   flags;
     GpuSurfaceColorFormat colorFormat;

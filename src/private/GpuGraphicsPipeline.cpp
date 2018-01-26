@@ -1,10 +1,57 @@
 #include "GpuGraphicsPipeline.hpp"
-#include "Matrix.hpp"
+#include "GpuDevice.hpp"
+#include "GpuVertexAttribute.hpp"
+#include "GpuGeometry.hpp"
+#include "GpuGraphicsProgram.hpp"
+#include "GpuRenderPass.hpp"
+#include <algorithm>
 
 namespace lxd
 {
+void InitVertexAttributes( const bool instance, const GpuVertexAttribute* vertexLayout,
+                           const int numAttribs, const int storedAttribsFlags,
+                           const int                          usedAttribsFlags,
+                           VkVertexInputAttributeDescription* attributes, int* attributeCount,
+                           VkVertexInputBindingDescription* bindings, int* bindingCount,
+                           VkDeviceSize* bindingOffsets )
+{
+    size_t offset = 0;
+    for ( int i = 0; vertexLayout[i].attributeFlag != 0; i++ )
+    {
+        const GpuVertexAttribute* v = &vertexLayout[i];
+        if ( ( v->attributeFlag & storedAttribsFlags ) != 0 )
+        {
+            if ( ( v->attributeFlag & usedAttribsFlags ) != 0 )
+            {
+                for ( int location = 0; location < v->locationCount; location++ )
+                {
+                    attributes[*attributeCount + location].location = *attributeCount + location;
+                    attributes[*attributeCount + location].binding  = *bindingCount;
+                    attributes[*attributeCount + location].format   = (VkFormat)v->attributeFormat;
+                    attributes[*attributeCount + location].offset   = ( uint32_t )(
+                        location * v->attributeSize /
+                        v->locationCount ); // limited offset used for packed vertex data
+                }
 
-GpuGraphicsPipeline::GpuGraphicsPipeline()
+                bindings[*bindingCount].binding = *bindingCount;
+                bindings[*bindingCount].stride  = (uint32_t)v->attributeSize;
+                bindings[*bindingCount].inputRate =
+                    instance ? VK_VERTEX_INPUT_RATE_INSTANCE : VK_VERTEX_INPUT_RATE_VERTEX;
+
+                bindingOffsets[*bindingCount] =
+                    (VkDeviceSize)offset; // memory offset within vertex buffer
+
+                *attributeCount += v->locationCount;
+                *bindingCount += 1;
+            }
+            offset += numAttribs * v->attributeSize;
+        }
+    }
+}
+
+GpuGraphicsPipeline::GpuGraphicsPipeline( GpuContext*                     context,
+                                          const GpuGraphicsPipelineParms* parms )
+    : context( *context )
 {
 
     // Make sure the geometry provides all the attributes needed by the program.
@@ -141,8 +188,9 @@ GpuGraphicsPipeline::GpuGraphicsPipeline()
     pipelineDynamicStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
     pipelineDynamicStateCreateInfo.pNext = NULL;
     pipelineDynamicStateCreateInfo.flags = 0;
-    pipelineDynamicStateCreateInfo.dynamicStateCount = ARRAY_SIZE( dynamicStateEnables );
-    pipelineDynamicStateCreateInfo.pDynamicStates    = dynamicStateEnables;
+    pipelineDynamicStateCreateInfo.dynamicStateCount =
+        static_cast<uint32_t>( std::size( dynamicStateEnables ) );
+    pipelineDynamicStateCreateInfo.pDynamicStates = dynamicStateEnables;
 
     VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo;
     graphicsPipelineCreateInfo.sType             = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -175,8 +223,7 @@ GpuGraphicsPipeline::GpuGraphicsPipeline()
 
 GpuGraphicsPipeline::~GpuGraphicsPipeline()
 {
-    VC( context->device->vkDestroyPipeline( context->device->device, this->pipeline,
-                                            VK_ALLOCATOR ) );
+    VC( context.device->vkDestroyPipeline( context.device->device, this->pipeline, VK_ALLOCATOR ) );
 
     memset( pipeline, 0, sizeof( GpuGraphicsPipeline ) );
 }

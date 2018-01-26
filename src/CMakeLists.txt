@@ -37,5 +37,5 @@ add_library( lxd_gfx STATIC
 set_property(TARGET lxd_gfx PROPERTY CXX_STANDARD 17)
 set_property(TARGET lxd_gfx PROPERTY CXX_STANDARD_REQUIRED ON)
 
-target_compile_definitions( lxd_gfx PUBLIC OS_WINDOWS=1 NOMINMAX _CRT_SECURE_NO_WARNINGS )
+target_compile_definitions( lxd_gfx PUBLIC OS_WINDOWS=1 _CRT_SECURE_NO_WARNINGS )
 target_include_directories( lxd_gfx PUBLIC ./external/math ./public $ENV{VK_SDK_PATH}/Include )

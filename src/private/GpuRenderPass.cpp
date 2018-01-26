@@ -1,10 +1,16 @@
+
 #include "GpuRenderPass.hpp"
+#include "GpuDevice.hpp"
 #include "GpuSwapchain.hpp"
 #include "GpuBuffer.hpp"
 
 namespace lxd
 {
-GpuRenderPass::GpuRenderPass()
+GpuRenderPass::GpuRenderPass( GpuContext* context, const GpuSurfaceColorFormat colorFormat,
+                              const GpuSurfaceDepthFormat depthFormat,
+                              const GpuSampleCount sampleCount, const GpuRenderPassType type,
+                              const int flags )
+    : context( *context )
 {
     assert( ( context->device->physicalDeviceProperties.limits.framebufferColorSampleCounts &
               (VkSampleCountFlags)sampleCount ) != 0 );
@@ -123,7 +129,7 @@ GpuRenderPass::GpuRenderPass()
 
 GpuRenderPass::~GpuRenderPass()
 {
-    VC( context->device->vkDestroyRenderPass( context->device->device, this->renderPass,
-                                              VK_ALLOCATOR ) );
+    VC( context.device->vkDestroyRenderPass( context.device->device, this->renderPass,
+                                             VK_ALLOCATOR ) );
 }
 } // namespace lxd
