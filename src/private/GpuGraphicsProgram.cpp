@@ -280,6 +280,91 @@ GpuProgramParmLayout::~GpuProgramParmLayout()
                                                       this->descriptorSetLayout, VK_ALLOCATOR ) );
 }
 
+///
+///
+///
+void GpuProgramParmState::SetParm(const GpuProgramParmLayout* parmLayout, const int index,
+	const GpuProgramParmType parmType, const void* pointer)
+{
+	assert(index >= 0 && index < MAX_PROGRAM_PARMS);
+	if (pointer != NULL)
+	{
+		bool found = false;
+		for (int i = 0; i < parmLayout->numParms; i++)
+		{
+			if (parmLayout->parms[i].index == index)
+			{
+				assert(parmLayout->parms[i].type == parmType);
+				found = true;
+				break;
+			}
+		}
+		// Currently parms can be set even if they are not used by the program.
+		//assert( found );
+		UNUSED_PARM(found);
+	}
+
+	this->parms[index] = pointer;
+
+	const int pushConstantSize = GpuProgramParm::GetPushConstantSize(parmType);
+	if (pushConstantSize > 0)
+	{
+		assert(parmLayout->offsetForIndex[index] >= 0);
+		assert(parmLayout->offsetForIndex[index] + pushConstantSize <=
+			MAX_SAVED_PUSH_CONSTANT_BYTES);
+		memcpy(&this->data[parmLayout->offsetForIndex[index]], pointer, pushConstantSize);
+	}
+}
+
+const void* GpuProgramParmState::NewPushConstantData(const GpuProgramParmLayout* newLayout, const int newPushConstantIndex,
+	const GpuProgramParmState* newParmState, const GpuProgramParmLayout* oldLayout,
+	const int oldPushConstantIndex, const GpuProgramParmState* oldParmState, const bool force)
+{
+	const GpuProgramParm* newParm = newLayout->pushConstants[newPushConstantIndex];
+	const unsigned char* newData = &newParmState->data[newLayout->offsetForIndex[newParm->index]];
+	if (force || oldLayout == NULL || oldPushConstantIndex >= oldLayout->numPushConstants)
+	{
+		return reinterpret_cast<const void*>(newData) ;
+	}
+	const GpuProgramParm* oldParm = oldLayout->pushConstants[oldPushConstantIndex];
+	const unsigned char* oldData = &oldParmState->data[oldLayout->offsetForIndex[oldParm->index]];
+	if (newParm->type != oldParm->type || newParm->binding != oldParm->binding)
+	{
+		return reinterpret_cast<const void*>(newData);
+	}
+	const int pushConstantSize = GpuProgramParm::GetPushConstantSize(newParm->type);
+	if (memcmp(newData, oldData, pushConstantSize) != 0)
+	{
+		return reinterpret_cast<const void*>(newData);
+	}
+	return NULL;
+}
+
+bool GpuProgramParmState::DescriptorsMatch(const GpuProgramParmLayout* layout1,
+	const GpuProgramParmState*  parmState1,
+	const GpuProgramParmLayout* layout2,
+	const GpuProgramParmState*  parmState2)
+{
+	if (layout1 == NULL || layout2 == NULL)
+	{
+		return false;
+	}
+	if (layout1->hash != layout2->hash)
+	{
+		return false;
+	}
+	for (int i = 0; i < layout1->numBindings; i++)
+	{
+		if (parmState1->parms[layout1->bindings[i]->index] !=
+			parmState2->parms[layout2->bindings[i]->index])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+
 GpuGraphicsProgram::GpuGraphicsProgram(
     GpuContext* context, const void* vertexSourceData, const size_t vertexSourceSize,
     const void* fragmentSourceData, const size_t fragmentSourceSize, const GpuProgramParm* parms,

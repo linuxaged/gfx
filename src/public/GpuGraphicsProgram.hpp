@@ -4,6 +4,9 @@
 
 namespace lxd
 {
+
+static int const MAX_PROGRAM_PARMS = 16;
+
 enum GpuProgramStageFlags
 {
     GPU_PROGRAM_STAGE_FLAG_VERTEX   = 0b0,
@@ -73,8 +76,6 @@ struct GpuProgramParm
 class GpuContext;
 class GpuProgramParmLayout
 {
-    static int const MAX_PROGRAM_PARMS = 16;
-
   public:
     GpuProgramParmLayout( GpuContext* context, GpuProgramParm const* parms, const int numParms );
     ~GpuProgramParmLayout();
@@ -92,6 +93,26 @@ class GpuProgramParmLayout
     int                   numBindings                      = 0;
     int                   numPushConstants                 = 0;
     unsigned int          hash                             = 0;
+};
+
+static const int MAX_SAVED_PUSH_CONSTANT_BYTES = 512;
+class GpuProgramParmState
+{
+  public:
+    void          SetParm( const GpuProgramParmLayout* parmLayout, const int index,
+                           const GpuProgramParmType parmType, const void* pointer );
+    const void*   NewPushConstantData( const GpuProgramParmLayout* newLayout,
+                                       const int                   newPushConstantIndex,
+                                       const GpuProgramParmState*  newParmState,
+                                       const GpuProgramParmLayout* oldLayout,
+                                       const int                   oldPushConstantIndex,
+                                       const GpuProgramParmState* oldParmState, const bool force );
+    bool          DescriptorsMatch( const GpuProgramParmLayout* layout1,
+                                    const GpuProgramParmState*  parmState1,
+                                    const GpuProgramParmLayout* layout2,
+                                    const GpuProgramParmState*  parmState2 );
+    const void*   parms[MAX_PROGRAM_PARMS];
+    unsigned char data[MAX_SAVED_PUSH_CONSTANT_BYTES];
 };
 
 struct GpuVertexAttribute;

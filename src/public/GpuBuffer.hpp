@@ -39,6 +39,7 @@ class GpuBuffer
 class GpuDepthBuffer
 {
   public:
+    GpuDepthBuffer( GpuContext* context ) : context( *context ) {}
     GpuDepthBuffer( GpuContext* context, const GpuSurfaceDepthFormat depthFormat,
                     const GpuSampleCount sampleCount, const int width, const int height,
                     const int numLayers );

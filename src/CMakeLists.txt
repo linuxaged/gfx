@@ -15,10 +15,18 @@ add_library( lxd_gfx STATIC
 	private/GpuDevice.cpp
 	public/GpuContext.hpp
 	private/GpuContext.cpp
+	public/GpuFence.hpp
+	private/GpuFence.cpp
+	public/GpuTimer.hpp
+	private/GpuTimer.cpp
 	public/GpuSwapchain.hpp
 	private/GpuSwapchain.cpp
 	public/GpuBuffer.hpp
 	private/GpuBuffer.cpp
+	public/GpuTexture.hpp
+	private/GpuTexture.cpp
+	public/GpuFrameBuffer.hpp
+	private/GpuFrameBuffer.cpp
 	public/GpuWindow.hpp
 	private/GpuWindow.cpp
 	public/GpuVertexAttribute.hpp
@@ -31,7 +39,12 @@ add_library( lxd_gfx STATIC
 	private/GpuRenderPass.cpp
 	public/GpuGraphicsPipeline.hpp
 	private/GpuGraphicsPipeline.cpp
-
+	public/GpuGraphicsCommand.hpp
+	private/GpuGraphicsCommand.cpp
+	public/GpuComputeCommand.hpp
+	private/GpuComputeCommand.cpp
+	public/GpuCommandBuffer.hpp
+	private/GpuCommandBuffer.cpp
 )
 
 set_property(TARGET lxd_gfx PROPERTY CXX_STANDARD 17)
